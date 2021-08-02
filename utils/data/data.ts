@@ -2,6 +2,7 @@ const data = {
   products: [
     {
       name: 'Camera',
+      slug: 'camera',
       category: 'cameras',
       image: '/images/camera.jpg',
       price: 800,
@@ -13,6 +14,7 @@ const data = {
     },
     {
       name: 'Shirt',
+      slug: 'shirt',
       category: 'shirts',
       image: '/images/shirt.jpg',
       price: 60,
@@ -24,6 +26,7 @@ const data = {
     },
     {
       name: 'Shoes',
+      slug: 'shoes',
       category: 'shoes',
       image: '/images/shoes.jpg',
       price: 40,
@@ -35,6 +38,7 @@ const data = {
     },
     {
       name: 'Air Pods',
+      slug: 'air-pods',
       category: 'headphone',
       image: '/images/pods.jpg',
       price: 200,
@@ -46,6 +50,7 @@ const data = {
     },
     {
       name: 'Watch',
+      slug: 'watch',
       category: 'watch',
       image: '/images/watch.jpg',
       price: 940,
@@ -57,6 +62,7 @@ const data = {
     },
     {
       name: 'Pants',
+      slug: 'pants',
       category: 'pants',
       image: '/images/pants.jpg',
       price: 60,
