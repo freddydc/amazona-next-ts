@@ -12,15 +12,18 @@ import useStyles from './styles/styles';
 
 type LayoutProps = {
   children?: any;
+  title?: string;
+  description?: string;
 };
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ title, description, children }: LayoutProps) => {
   const classes = useStyles();
 
   return (
     <div>
       <Head>
-        <title>Magazine</title>
+        <title>{title ? `${title} - Magazine` : 'Magazine'}</title>
+        {description && <meta name="description" content={description} />}
       </Head>
       <AppBar className={classes.navbar} position="static">
         <Toolbar>
