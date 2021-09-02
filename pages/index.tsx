@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import NextLink from 'next/link';
-import Layout from '../components/Layout/Layout';
+import Layout from '@components/Layout/Layout';
 import data from '../utils/data/data';
 
 const Home = () => {
