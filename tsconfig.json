@@ -3,6 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["components/*"],
+      "@database": ["utils/database/db"],
+      "@models/*": ["models/*"],
       "@utils/*": ["utils/*"]
     },
     "target": "es5",
