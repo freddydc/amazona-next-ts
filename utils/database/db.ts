@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { Products } from '@utils/types';
 
 type Connection = {
   isConnected: number | boolean;
@@ -35,6 +36,13 @@ const disconnect = async () => {
   }
 };
 
-const db = { connect, disconnect };
+const convertDocToObj = (doc: Products) => {
+  doc._id = doc._id.toString();
+  doc.createdAt = doc.createdAt.toString();
+  doc.updatedAt = doc.updatedAt.toString();
+  return doc;
+};
+
+const db = { connect, disconnect, convertDocToObj };
 
 export default db;

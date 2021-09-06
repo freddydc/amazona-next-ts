@@ -9,17 +9,21 @@ import {
   Typography,
 } from '@material-ui/core';
 import NextLink from 'next/link';
+import { GetServerSideProps } from 'next';
+import { Products } from '@utils/types';
 import Layout from '@components/Layout/Layout';
-import data from '../utils/data/data';
+import Product from '@models/Product/Product';
+import db from '@database';
 
-const Home = () => {
+const Home = (props: { products: Products[] }) => {
+  const { products } = props;
   return (
     <Layout>
       <div>
         <h1>Products</h1>
         <Grid container spacing={3}>
-          {data.products.map((product) => (
-            <Grid item md={4} key={product.name}>
+          {products.map((product) => (
+            <Grid item md={4} key={product._id}>
               <Card>
                 <NextLink href={`/product/${product.slug}`} passHref>
                   <CardActionArea>
@@ -46,6 +50,17 @@ const Home = () => {
       </div>
     </Layout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  await db.connect();
+  const products: Products[] = await Product.find({}).lean();
+  await db.disconnect();
+  return {
+    props: {
+      products: products.map(db.convertDocToObj),
+    },
+  };
 };
 
 export default Home;
