@@ -9,9 +9,22 @@ export type Products = {
   price: number;
   brand: string;
   rating: number;
+  quantity: number;
   numReviews: number;
   countInStock: number;
   description: string;
   createdAt: string;
   updatedAt: string;
+};
+
+export type CartState = {
+  darkMode: boolean;
+  cart: {
+    cartItems: Products[];
+  };
+};
+
+export type CartAction = {
+  type: string;
+  payload: any;
 };

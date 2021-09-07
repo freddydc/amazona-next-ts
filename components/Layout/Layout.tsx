@@ -3,6 +3,7 @@ import Head from 'next/head';
 import NextLink from 'next/link';
 import {
   AppBar,
+  Badge,
   Toolbar,
   Typography,
   Container,
@@ -24,7 +25,7 @@ type LayoutProps = {
 
 const Layout = ({ title, description, children }: LayoutProps) => {
   const { state, dispatch } = useContext(StoreContext);
-  const { darkMode } = state;
+  const { darkMode, cart } = state;
 
   const classes = useStyles();
   const theme = createTheme({
@@ -52,7 +53,10 @@ const Layout = ({ title, description, children }: LayoutProps) => {
   });
 
   const darkModeChangeHandler = () => {
-    dispatch({ type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON' });
+    dispatch({
+      type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON',
+      payload: '',
+    });
     const newDarkMode = !darkMode;
     Cookies.set('darkMode', newDarkMode ? 'ON' : 'OFF');
   };
@@ -76,7 +80,18 @@ const Layout = ({ title, description, children }: LayoutProps) => {
             <div>
               <Switch checked={darkMode} onChange={darkModeChangeHandler} />
               <NextLink href="/cart" passHref>
-                <Link>Cart</Link>
+                <Link>
+                  {cart.cartItems.length > 0 ? (
+                    <Badge
+                      color="secondary"
+                      badgeContent={cart.cartItems.length}
+                    >
+                      Cart
+                    </Badge>
+                  ) : (
+                    'Cart'
+                  )}
+                </Link>
               </NextLink>
               <NextLink href="/login" passHref>
                 <Link>Login</Link>
