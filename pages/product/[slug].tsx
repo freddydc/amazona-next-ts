@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import {
@@ -20,6 +21,7 @@ import db from '@database';
 import axios from 'axios';
 
 const ProductScreen = (props: { product: Products }) => {
+  const router = useRouter();
   const classes = useStyles();
   const { product } = props;
   const { dispatch } = useContext(StoreContext);
@@ -35,6 +37,7 @@ const ProductScreen = (props: { product: Products }) => {
       return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 } });
+    router.push('/cart');
   };
 
   return (
