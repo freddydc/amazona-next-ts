@@ -1,3 +1,5 @@
+import React, { useContext } from 'react';
+import { useRouter } from 'next/router';
 import {
   Button,
   Card,
@@ -10,13 +12,33 @@ import {
 } from '@material-ui/core';
 import NextLink from 'next/link';
 import { GetServerSideProps } from 'next';
-import { Products } from '@utils/types';
+import { StoreContext } from '@utils/store/Store';
 import Layout from '@components/Layout/Layout';
 import Product from '@models/Product/Product';
+import { Products } from '@utils/types';
 import db from '@database';
+import axios from 'axios';
 
 const Home = (props: { products: Products[] }) => {
+  const router = useRouter();
   const { products } = props;
+  const { state, dispatch } = useContext(StoreContext);
+  const {
+    cart: { cartItems },
+  } = state;
+
+  const addToCartHandler = async (product: Products) => {
+    const existItem = cartItems.find((x) => x._id === product._id);
+    const quantity = existItem ? existItem.quantity + 1 : 1;
+    const { data } = await axios.get(`/api/products/${product._id}`);
+    if (data.countInStock < quantity) {
+      window.alert('Sorry. Product is out of stock');
+      return;
+    }
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } });
+    router.push('/cart');
+  };
+
   return (
     <Layout>
       <div>
@@ -39,7 +61,11 @@ const Home = (props: { products: Products[] }) => {
                 </NextLink>
                 <CardActions>
                   <Typography>${product.price}</Typography>
-                  <Button size="small" color="primary">
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => addToCartHandler(product)}
+                  >
                     Add To Cart
                   </Button>
                 </CardActions>
