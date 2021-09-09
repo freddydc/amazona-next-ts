@@ -1,5 +1,12 @@
-import React, { FormEventHandler, useState } from 'react';
+import React, {
+  FormEventHandler,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { useRouter } from 'next/router';
 import NextLink from 'next/link';
+import { StoreContext } from '@utils/store/Store';
 import Layout from '@components/Layout/Layout';
 import useStyles from '@components/Layout/styles';
 import {
@@ -10,12 +17,23 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import Cookies from 'js-cookie';
 import axios from 'axios';
 
 const Login = () => {
   const classes = useStyles();
+  const router = useRouter();
+  const { redirect } = router.query;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { state, dispatch } = useContext(StoreContext);
+
+  const { userInfo } = state;
+  useEffect(() => {
+    if (userInfo) {
+      router.push('/');
+    }
+  }, [router, userInfo]);
 
   const submitHandler: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -24,14 +42,16 @@ const Login = () => {
         email,
         password,
       });
-      alert(`Success Login! ${data.name}`);
+      dispatch({ type: 'USER_LOGIN', payload: data });
+      Cookies.set('userInfo', JSON.stringify(data));
+      router.push((redirect as string) || '/');
     } catch (err: any) {
       alert(err.response.data ? err.response.data.message : err.message);
     }
   };
 
   return (
-    <Layout>
+    <Layout title="Login">
       <form className={classes.form} onSubmit={submitHandler}>
         <Typography component="h1" variant="h1">
           Login

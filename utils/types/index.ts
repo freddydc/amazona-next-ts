@@ -30,6 +30,7 @@ export type CartState = {
   cart: {
     cartItems: Products[];
   };
+  userInfo: Users;
 };
 
 export type CartAction = {
