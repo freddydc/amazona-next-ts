@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FormEventHandler, useState } from 'react';
 import NextLink from 'next/link';
 import Layout from '@components/Layout/Layout';
 import useStyles from '@components/Layout/styles';
@@ -10,12 +10,29 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import axios from 'axios';
 
 const Login = () => {
   const classes = useStyles();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const submitHandler: FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post('/api/users/login', {
+        email,
+        password,
+      });
+      alert(`Success Login! ${data.name}`);
+    } catch (err: any) {
+      alert(err.response.data ? err.response.data.message : err.message);
+    }
+  };
+
   return (
     <Layout>
-      <form className={classes.form}>
+      <form className={classes.form} onSubmit={submitHandler}>
         <Typography component="h1" variant="h1">
           Login
         </Typography>
@@ -27,6 +44,7 @@ const Login = () => {
               fullWidth
               variant="outlined"
               inputProps={{ type: 'email' }}
+              onChange={(e) => setEmail(e.target.value)}
             ></TextField>
           </ListItem>
           <ListItem>
@@ -36,6 +54,7 @@ const Login = () => {
               fullWidth
               variant="outlined"
               inputProps={{ type: 'password' }}
+              onChange={(e) => setPassword(e.target.value)}
             ></TextField>
           </ListItem>
           <ListItem>
