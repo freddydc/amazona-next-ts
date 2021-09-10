@@ -84,7 +84,7 @@ const Login = () => {
           </ListItem>
           <ListItem>
             New customer? &nbsp;
-            <NextLink href="/register" passHref>
+            <NextLink href={`/register?redirect=${redirect || '/'}`} passHref>
               <Link>Create your account</Link>
             </NextLink>
           </ListItem>
