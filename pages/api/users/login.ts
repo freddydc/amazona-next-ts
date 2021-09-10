@@ -22,7 +22,7 @@ handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
       isAdmin: user.isAdmin,
     });
   } else {
-    res.status(401).send({ message: 'Invalid user or password' });
+    res.status(401).send({ message: 'Invalid email or password' });
   }
 });
 
