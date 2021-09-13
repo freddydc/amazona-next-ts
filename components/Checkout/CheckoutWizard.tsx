@@ -1,7 +1,9 @@
 import React from 'react';
 import { Step, StepLabel, Stepper } from '@material-ui/core';
+import useCheckoutStyles from './styles';
 
 const CheckoutWizard = ({ activeStep = 0 }) => {
+  const classes = useCheckoutStyles();
   const stepsTitle = [
     'Login',
     'Shipping Address',
@@ -9,7 +11,11 @@ const CheckoutWizard = ({ activeStep = 0 }) => {
     'Place Order',
   ];
   return (
-    <Stepper activeStep={activeStep} alternativeLabel>
+    <Stepper
+      className={classes.transparentBackground}
+      activeStep={activeStep}
+      alternativeLabel
+    >
       {stepsTitle.map((step) => (
         <Step key={step}>
           <StepLabel>{step}</StepLabel>
