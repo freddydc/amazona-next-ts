@@ -1,5 +1,10 @@
 import React, { createContext, Dispatch, ReactNode, useReducer } from 'react';
-import { CartAction, CartState, Products as Items } from '@utils/types';
+import {
+  Address,
+  CartAction,
+  CartState,
+  Products as Items,
+} from '@utils/types';
 import Cookies from 'js-cookie';
 
 type Context = {
@@ -10,12 +15,15 @@ type Context = {
 const context = {} as Context;
 export const StoreContext = createContext(context);
 
-const initialState = {
+const initialState: CartState = {
   darkMode: Cookies.get('darkMode') === 'ON' ? true : false,
   cart: {
     cartItems: Cookies.get('cartItems')
       ? JSON.parse(`${Cookies.get('cartItems')}`)
       : [],
+    shippingAddress: Cookies.get('shippingAddress')
+      ? JSON.parse(`${Cookies.get('shippingAddress')}`)
+      : {},
   },
   userInfo: Cookies.get('userInfo')
     ? JSON.parse(`${Cookies.get('userInfo')}`)
@@ -31,10 +39,10 @@ function reducer(state: CartState, action: CartAction) {
     case 'CART_ADD_ITEM': {
       const newItem = action.payload;
       const existItem = state.cart.cartItems.find(
-        (item: Items) => item._id === newItem._id
+        (item) => item._id === newItem._id
       );
       const cartItems = existItem
-        ? state.cart.cartItems.map((item: Items) =>
+        ? state.cart.cartItems.map((item) =>
             item.name === existItem.name ? newItem : item
           )
         : [...state.cart.cartItems, newItem];
@@ -48,10 +56,19 @@ function reducer(state: CartState, action: CartAction) {
       Cookies.set('cartItems', JSON.stringify(cartItems));
       return { ...state, cart: { ...state.cart, cartItems } };
     }
+    case 'SAVE_SHIPPING_ADDRESS':
+      return {
+        ...state,
+        cart: { ...state.cart, shippingAddress: action.payload },
+      };
     case 'USER_LOGIN':
       return { ...state, userInfo: action.payload };
     case 'USER_LOGOUT':
-      return { ...state, userInfo: null, cart: { cartItems: [] } };
+      return {
+        ...state,
+        userInfo: null,
+        cart: { cartItems: [] as Items[], shippingAddress: {} as Address },
+      };
     default:
       return state;
   }

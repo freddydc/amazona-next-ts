@@ -1,5 +1,13 @@
 type ProductId = string;
 
+export type Address = {
+  fullName: string;
+  address: string;
+  city: string;
+  postalCode: number;
+  country: string;
+};
+
 export type Products = {
   _id: ProductId;
   name: string;
@@ -25,11 +33,14 @@ export type Users = {
   isAdmin: boolean;
 };
 
+type CartItems = {
+  cartItems: Products[];
+  shippingAddress: Address;
+};
+
 export type CartState = {
   darkMode: boolean;
-  cart: {
-    cartItems: Products[];
-  };
+  cart: CartItems;
   userInfo: Users;
 };
 

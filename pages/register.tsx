@@ -56,7 +56,7 @@ const Register = () => {
       });
       dispatch({ type: 'USER_LOGIN', payload: data });
       Cookies.set('userInfo', JSON.stringify(data));
-      router.push(`${redirect}` || '/');
+      router.push((redirect as string) || '/');
     } catch (err: any) {
       enqueueSnackbar(
         err.response.data && err.response.data.message
