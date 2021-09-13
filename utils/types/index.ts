@@ -36,6 +36,7 @@ export type Users = {
 type CartItems = {
   cartItems: Products[];
   shippingAddress: Address;
+  paymentMethod?: string;
 };
 
 export type CartState = {
