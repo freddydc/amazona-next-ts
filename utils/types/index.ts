@@ -60,6 +60,33 @@ export type CartAction = {
   payload: any;
 };
 
+export type OrderItems = {
+  _id: string;
+  user: Users;
+  orderItems: Products[];
+  shippingAddress: Address;
+  paymentMethod: string;
+  itemsPrice: number;
+  shippingPrice: number;
+  taxPrice: number;
+  totalPrice: number;
+  isPaid: string;
+  isDelivered: string;
+  paidAt: string;
+  deliveredAt: string;
+};
+
+export type OrderState = {
+  loading: boolean;
+  order: OrderItems;
+  error: string;
+};
+
+export type OrderAction = {
+  type: string;
+  payload?: OrderItems | string;
+};
+
 export type GError = {
   message: string;
   response: {
