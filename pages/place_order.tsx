@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
@@ -6,6 +6,7 @@ import Image from 'next/image';
 import {
   Button,
   Card,
+  CircularProgress,
   Grid,
   Link,
   List,
@@ -21,20 +22,31 @@ import {
 import Layout from '@components/Layout/Layout';
 import useStyles from '@components/Layout/styles';
 import CheckoutWizard from '@components/Checkout/CheckoutWizard';
+import { GError } from '@utils/types';
 import { StoreContext } from '@utils/store/Store';
+import { useSnackbar } from 'notistack';
+import { getError } from '@utils/error';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
 const PlaceOrder = () => {
   const classes = useStyles();
   const router = useRouter();
-  const { state } = useContext(StoreContext);
+  const { state, dispatch } = useContext(StoreContext);
+  const [loading, setLoading] = useState(false);
+  const { closeSnackbar, enqueueSnackbar } = useSnackbar();
 
   const {
     cart: { cartItems, shippingAddress, paymentMethod },
+    userInfo,
   } = state;
 
   useEffect(() => {
     if (!paymentMethod) {
       router.push('/payment');
+    }
+    if (cartItems.length === 0) {
+      router.push('/cart');
     }
   }, []);
 
@@ -48,8 +60,37 @@ const PlaceOrder = () => {
   const taxPrice = toRound(itemsPrice * 0.15);
   const totalPrice = toRound(itemsPrice + shippingPrice + taxPrice);
 
+  const placeOrderHandler = async () => {
+    closeSnackbar();
+    try {
+      setLoading(true);
+      const { data } = await axios.post(
+        '/api/orders',
+        {
+          orderItems: cartItems,
+          shippingAddress,
+          paymentMethod,
+          itemsPrice,
+          shippingPrice,
+          taxPrice,
+          totalPrice,
+        },
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      dispatch({ type: 'CART_CLEAR', payload: '' });
+      Cookies.remove('cartItems');
+      setLoading(false);
+      router.push(`/order/${data._id}`);
+    } catch (err) {
+      setLoading(false);
+      enqueueSnackbar(getError(err as GError), { variant: 'error' });
+    }
+  };
+
   return (
-    <Layout title="Shopping Cart">
+    <Layout title="Place Order">
       <CheckoutWizard activeStep={3} />
       <Typography component="h1" variant="h1">
         Place Order
@@ -188,10 +229,20 @@ const PlaceOrder = () => {
                 </Grid>
               </ListItem>
               <ListItem>
-                <Button variant="contained" color="primary" fullWidth>
+                <Button
+                  onClick={placeOrderHandler}
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                >
                   Place Order
                 </Button>
               </ListItem>
+              {loading && (
+                <ListItem>
+                  <CircularProgress />
+                </ListItem>
+              )}
             </List>
           </Card>
         </Grid>

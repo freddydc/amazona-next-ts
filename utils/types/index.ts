@@ -25,12 +25,22 @@ export type Products = {
   updatedAt: string;
 };
 
+export type AuthUser = {
+  _id?: string;
+  name?: string;
+  email?: string;
+  isAdmin?: boolean;
+  exp?: number;
+  iat?: number;
+};
+
 export type Users = {
   _id: string;
   name: string;
   email: string;
   password: string;
   isAdmin: boolean;
+  token: string;
 };
 
 type CartItems = {
@@ -48,4 +58,13 @@ export type CartState = {
 export type CartAction = {
   type: string;
   payload: any;
+};
+
+export type GError = {
+  message: string;
+  response: {
+    data: {
+      message: string;
+    };
+  };
 };

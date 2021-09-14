@@ -1,4 +1,5 @@
-import { Users } from '@utils/types';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { AuthUser, Users } from '@utils/types';
 import jwt from 'jsonwebtoken';
 
 const signToken = (user: Users) => {
@@ -16,4 +17,25 @@ const signToken = (user: Users) => {
   );
 };
 
-export { signToken };
+const isAuth = async (
+  req: NextApiRequest & { user?: AuthUser },
+  res: NextApiResponse,
+  next: () => void
+) => {
+  const { authorization } = req.headers;
+  if (authorization) {
+    const token = authorization.slice(7, authorization.length);
+    jwt.verify(token, `${process.env.JWT_SECRET}`, (err, decode) => {
+      if (err) {
+        res.status(401).send({ message: 'Token is not valid' });
+      } else {
+        req.user = decode;
+        next();
+      }
+    });
+  } else {
+    res.status(401).send({ message: 'Token is not supplied' });
+  }
+};
+
+export { signToken, isAuth };
