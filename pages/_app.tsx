@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import type { AppProps } from 'next/app';
 import StoreProvider from '@utils/store/Store';
 import { SnackbarProvider } from 'notistack';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import '../styles/globals.css';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
@@ -14,7 +15,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <SnackbarProvider anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
       <StoreProvider>
-        <Component {...pageProps} />
+        <PayPalScriptProvider deferLoading={true} options={{ 'client-id': '' }}>
+          <Component {...pageProps} />
+        </PayPalScriptProvider>{' '}
       </StoreProvider>
     </SnackbarProvider>
   );
