@@ -149,6 +149,15 @@ const Layout = ({ title, description, children }: LayoutProps) => {
                     >
                       Order history
                     </MenuItem>
+                    {userInfo.isAdmin && (
+                      <MenuItem
+                        onClick={(e) =>
+                          loginMenuCloseHandler(e, '/admin/dashboard')
+                        }
+                      >
+                        Admin dashboard
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
                   </Menu>
                 </>

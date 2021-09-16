@@ -93,6 +93,19 @@ export type OrderAction = {
   payload?: OrderItems | string;
 };
 
+export type Sales = {
+  _id: string;
+  totalSales: number;
+};
+
+export type AData = {
+  ordersCount: number;
+  productsCount: number;
+  usersCount: number;
+  ordersPrice: number;
+  salesData: Sales[];
+};
+
 export type GError = {
   message: string;
   response: {
