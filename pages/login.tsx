@@ -15,7 +15,8 @@ import {
 } from '@material-ui/core';
 import Cookies from 'js-cookie';
 import { useSnackbar } from 'notistack';
-import { Users } from '@utils/types';
+import { GError, Users } from '@utils/types';
+import { getError } from '@utils/error';
 import axios from 'axios';
 
 const Login = () => {
@@ -47,13 +48,8 @@ const Login = () => {
       dispatch({ type: 'USER_LOGIN', payload: data });
       Cookies.set('userInfo', JSON.stringify(data));
       router.push((redirect as string) || '/');
-    } catch (err: any) {
-      enqueueSnackbar(
-        err.response.data && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-        { variant: 'error' }
-      );
+    } catch (err) {
+      enqueueSnackbar(getError(err as GError), { variant: 'error' });
     }
   };
 

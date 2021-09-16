@@ -43,6 +43,10 @@ export type Users = {
   token: string;
 };
 
+export interface User extends Users {
+  confirmPassword: string;
+}
+
 type CartItems = {
   cartItems: Products[];
   shippingAddress: Address;
