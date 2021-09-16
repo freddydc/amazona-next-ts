@@ -74,6 +74,7 @@ export type OrderItems = {
   isDelivered: string;
   paidAt: string;
   deliveredAt: string;
+  createdAt: string;
 };
 
 export type OrderState = {

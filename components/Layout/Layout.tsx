@@ -1,9 +1,4 @@
-import React, {
-  MouseEventHandler,
-  ReactNode,
-  useContext,
-  useState,
-} from 'react';
+import React, { ReactNode, useContext, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -72,11 +67,17 @@ const Layout = ({ title, description, children }: LayoutProps) => {
     Cookies.set('darkMode', newDarkMode ? 'ON' : 'OFF');
   };
 
-  const loginClickHandler: MouseEventHandler<HTMLButtonElement> = (e) => {
+  const loginClickHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
   };
-  const loginMenuCloseHandler = () => {
+  const loginMenuCloseHandler = (
+    e: React.MouseEvent<HTMLLIElement>,
+    redirect: string
+  ) => {
     setAnchorEl(null);
+    if (redirect) {
+      router.push(redirect);
+    }
   };
 
   const logoutClickHandler = () => {
@@ -136,9 +137,17 @@ const Layout = ({ title, description, children }: LayoutProps) => {
                     open={Boolean(anchorEl)}
                     onClose={loginMenuCloseHandler}
                   >
-                    <MenuItem onClick={loginMenuCloseHandler}>Profile</MenuItem>
-                    <MenuItem onClick={loginMenuCloseHandler}>
-                      My account
+                    <MenuItem
+                      onClick={(e) => loginMenuCloseHandler(e, '/profile')}
+                    >
+                      Profile
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(e) =>
+                        loginMenuCloseHandler(e, '/order_history')
+                      }
+                    >
+                      Order history
                     </MenuItem>
                     <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
                   </Menu>
