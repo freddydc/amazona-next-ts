@@ -38,4 +38,16 @@ const isAuth = async (
   }
 };
 
-export { signToken, isAuth };
+const isAdmin = async (
+  req: NextApiRequest & { user: AuthUser },
+  res: NextApiResponse,
+  next: () => void
+) => {
+  if (req.user.isAdmin) {
+    next();
+  } else {
+    res.status(401).send({ message: 'User is not admin' });
+  }
+};
+
+export { signToken, isAuth, isAdmin };

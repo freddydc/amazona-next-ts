@@ -3,12 +3,12 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import Order from '@models/Order/Order';
 import Product from '@models/Product/Product';
 import User from '@models/User/User';
-import { isAuth } from '@utils/auth/auth';
+import { isAdmin, isAuth } from '@utils/auth/auth';
 import { onError } from '@utils/error';
 import db from '@database';
 
 const handler = nc({ onError });
-handler.use(isAuth);
+handler.use(isAuth, isAdmin);
 
 handler.get(async (req: NextApiRequest, res: NextApiResponse) => {
   await db.connect();
@@ -33,6 +33,7 @@ handler.get(async (req: NextApiRequest, res: NextApiResponse) => {
       },
     },
   ]);
+  await db.disconnect();
   res.send({ ordersCount, productsCount, usersCount, ordersPrice, salesData });
 });
 
