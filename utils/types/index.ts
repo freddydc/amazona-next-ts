@@ -86,6 +86,8 @@ export type OrderState = {
   successPay?: boolean;
   order: OrderItems;
   error: string;
+  loadingDeliver?: boolean;
+  successDeliver?: boolean;
 };
 
 export type OrderAction = {

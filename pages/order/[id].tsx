@@ -9,6 +9,7 @@ import { StoreContext } from '@utils/store/Store';
 import useStyles from '@components/Layout/styles';
 import Layout from '@components/Layout/Layout';
 import {
+  Button,
   Card,
   CircularProgress,
   Grid,
@@ -49,6 +50,19 @@ function reducer(state: OrderState, action: OrderAction) {
       return { ...state, loadingPay: false, errorPay: action.payload };
     case 'PAY_RESET':
       return { ...state, loadingPay: false, successPay: false, errorPay: '' };
+    case 'DELIVER_REQUEST':
+      return { ...state, loadingDeliver: true };
+    case 'DELIVER_SUCCESS':
+      return { ...state, loadingDeliver: false, successDeliver: true };
+    case 'DELIVER_FAIL':
+      return { ...state, loadingDeliver: false, errorDeliver: action.payload };
+    case 'DELIVER_RESET':
+      return {
+        ...state,
+        loadingDeliver: false,
+        successDeliver: false,
+        errorDeliver: '',
+      };
     default:
       return state;
   }
@@ -68,10 +82,10 @@ const Order = ({ params }: { params: { id: string } }) => {
     error: '',
   };
 
-  const [{ loading, error, order, successPay }, dispatch] = useReducer(
-    reducer,
-    initState
-  );
+  const [
+    { loading, error, order, successPay, loadingDeliver, successDeliver },
+    dispatch,
+  ] = useReducer(reducer, initState);
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   const {
@@ -106,10 +120,18 @@ const Order = ({ params }: { params: { id: string } }) => {
         });
       }
     };
-    if (!order._id || successPay || (order._id && order._id !== orderId)) {
+    if (
+      !order._id ||
+      successPay ||
+      successDeliver ||
+      (order._id && order._id !== orderId)
+    ) {
       fetchOrder();
       if (successPay) {
         dispatch({ type: 'PAY_RESET' });
+      }
+      if (successDeliver) {
+        dispatch({ type: 'DELIVER_RESET' });
       }
     } else {
       const loadPaypalScript = async () => {
@@ -127,7 +149,7 @@ const Order = ({ params }: { params: { id: string } }) => {
       };
       loadPaypalScript();
     }
-  }, [order, successPay]);
+  }, [order, successPay, successDeliver]);
 
   function createOrder(data: any, actions: any) {
     return actions.order
@@ -165,6 +187,24 @@ const Order = ({ params }: { params: { id: string } }) => {
 
   function onError(err: any) {
     enqueueSnackbar(getError(err), { variant: 'error' });
+  }
+
+  async function deliverOrderHandler() {
+    try {
+      dispatch({ type: 'DELIVER_REQUEST' });
+      const { data } = await axios.put(
+        `/api/orders/${order._id}/deliver`,
+        {},
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      dispatch({ type: 'DELIVER_SUCCESS', payload: data });
+      enqueueSnackbar('Order Is Delivered', { variant: 'success' });
+    } catch (err) {
+      dispatch({ type: 'DELIVER_FAIL', payload: getError(err as GError) });
+      enqueueSnackbar(getError(err as GError), { variant: 'error' });
+    }
   }
 
   return (
@@ -332,6 +372,22 @@ const Order = ({ params }: { params: { id: string } }) => {
                           onError={onError}
                         />
                       </div>
+                    )}
+                  </ListItem>
+                )}
+                {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                  <ListItem>
+                    {loadingDeliver ? (
+                      <CircularProgress />
+                    ) : (
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={deliverOrderHandler}
+                        fullWidth
+                      >
+                        Deliver Order
+                      </Button>
                     )}
                   </ListItem>
                 )}
