@@ -22,39 +22,39 @@ import {
 } from '@material-ui/core';
 import { getError } from '@utils/error';
 import { StoreContext } from '@utils/store/Store';
-import { GError, OrderItems } from '@utils/types';
+import { GError, Products } from '@utils/types';
 import axios from 'axios';
 
 type State = {
   loading: boolean;
-  orders: OrderItems[];
+  products: Products[];
   error: string;
 };
 
 type Action = {
   type: string;
-  payload?: OrderItems[] | string;
+  payload?: Products[] | string;
 };
 
-function reducer(state: State, action: Action) {
+function productReducer(state: State, action: Action) {
   switch (action.type) {
-    case 'ORDERS_REQUEST':
+    case 'PRODUCTS_REQUEST':
       return { ...state, loading: true, error: '' };
-    case 'ORDERS_SUCCESS':
+    case 'PRODUCTS_SUCCESS':
       return {
         ...state,
         loading: false,
-        orders: action.payload as OrderItems[],
+        products: action.payload as Products[],
         error: '',
       };
-    case 'ORDERS_FAIL':
+    case 'PRODUCTS_FAIL':
       return { ...state, loading: false, error: action.payload as string };
     default:
       return state;
   }
 }
 
-const OrderDashboard = () => {
+const ProductDashboard = () => {
   const classes = useStyles();
   const router = useRouter();
   const { state } = useContext(StoreContext);
@@ -62,12 +62,12 @@ const OrderDashboard = () => {
 
   const initialState = {
     loading: true,
-    orders: [] as OrderItems[],
+    products: [] as Products[],
     error: '',
   };
 
-  const [{ loading, error, orders }, dispatch] = useReducer(
-    reducer,
+  const [{ loading, error, products }, dispatch] = useReducer(
+    productReducer,
     initialState
   );
 
@@ -75,22 +75,22 @@ const OrderDashboard = () => {
     if (!userInfo) {
       router.push('/login');
     }
-    const fetchOrders = async () => {
+    const fetchProducts = async () => {
       try {
-        dispatch({ type: 'ORDERS_REQUEST' });
-        const { data } = await axios.get('/api/admin/orders', {
+        dispatch({ type: 'PRODUCTS_REQUEST' });
+        const { data } = await axios.get('/api/admin/products', {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
-        dispatch({ type: 'ORDERS_SUCCESS', payload: data });
+        dispatch({ type: 'PRODUCTS_SUCCESS', payload: data });
       } catch (err) {
-        dispatch({ type: 'ORDERS_FAIL', payload: getError(err as GError) });
+        dispatch({ type: 'PRODUCTS_FAIL', payload: getError(err as GError) });
       }
     };
-    fetchOrders();
+    fetchProducts();
   }, []);
 
   return (
-    <Layout title="Orders">
+    <Layout title="Products">
       <Grid container spacing={1}>
         <Grid item md={3} xs={12}>
           <Card className={classes.section}>
@@ -101,12 +101,12 @@ const OrderDashboard = () => {
                 </ListItem>
               </NextLink>
               <NextLink href="/admin/orders" passHref>
-                <ListItem selected button component="a">
+                <ListItem button component="a">
                   <ListItemText primary="Orders" />
                 </ListItem>
               </NextLink>
               <NextLink href="/admin/products" passHref>
-                <ListItem button component="a">
+                <ListItem selected button component="a">
                   <ListItemText primary="Products" />
                 </ListItem>
               </NextLink>
@@ -118,7 +118,7 @@ const OrderDashboard = () => {
             <List>
               <ListItem>
                 <Typography component="h1" variant="h1">
-                  Orders
+                  Products
                 </Typography>
               </ListItem>
               <ListItem>
@@ -132,42 +132,37 @@ const OrderDashboard = () => {
                       <TableHead>
                         <TableRow>
                           <TableCell>Id</TableCell>
-                          <TableCell>User</TableCell>
-                          <TableCell>Date</TableCell>
-                          <TableCell>Total</TableCell>
-                          <TableCell>Paid</TableCell>
-                          <TableCell>Delivered</TableCell>
-                          <TableCell>Action</TableCell>
+                          <TableCell>Name</TableCell>
+                          <TableCell>Price</TableCell>
+                          <TableCell>Category</TableCell>
+                          <TableCell>Count</TableCell>
+                          <TableCell>Rating</TableCell>
+                          <TableCell>Actions</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {orders.map((order) => (
-                          <TableRow key={order._id}>
-                            <TableCell>{order._id.substring(18, 24)}</TableCell>
+                        {products.map((product) => (
+                          <TableRow key={product._id}>
                             <TableCell>
-                              {order.user ? order.user.name : 'Deleted User'}
+                              {product._id.substring(18, 24)}
                             </TableCell>
+                            <TableCell>{product.name}</TableCell>
+                            <TableCell>{product.price}</TableCell>
+                            <TableCell>{product.category}</TableCell>
+                            <TableCell>{product.countInStock}</TableCell>
+                            <TableCell>{product.rating}</TableCell>
                             <TableCell>
-                              {order.createdAt.substring(0, 10)}
-                            </TableCell>
-                            <TableCell>${order.totalPrice}</TableCell>
-                            <TableCell>
-                              {order.isPaid
-                                ? `paid at ${order.paidAt.substring(0, 10)}`
-                                : 'not paid'}
-                            </TableCell>
-                            <TableCell>
-                              {order.isDelivered
-                                ? `delivered at ${order.deliveredAt.substring(
-                                    0,
-                                    10
-                                  )}`
-                                : 'not delivered'}
-                            </TableCell>
-                            <TableCell>
-                              <NextLink href={`/order/${order._id}`} passHref>
-                                <Button variant="contained">Details</Button>
-                              </NextLink>
+                              <NextLink
+                                href={`/admin/product/${product._id}`}
+                                passHref
+                              >
+                                <Button size="small" variant="contained">
+                                  Edit
+                                </Button>
+                              </NextLink>{' '}
+                              <Button size="small" variant="contained">
+                                Delete
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -184,4 +179,4 @@ const OrderDashboard = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(OrderDashboard), { ssr: false });
+export default dynamic(() => Promise.resolve(ProductDashboard), { ssr: false });
