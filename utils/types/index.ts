@@ -116,3 +116,11 @@ export type GError = {
     };
   };
 };
+
+type FileBuffer = {
+  buffer: Buffer;
+};
+
+export interface ImgBuffer {
+  file: FileBuffer;
+}
