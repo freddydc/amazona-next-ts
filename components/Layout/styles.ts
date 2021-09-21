@@ -41,6 +41,9 @@ const useStyles = makeStyles({
   fullWidth: {
     width: '100%',
   },
+  rightGrid: {
+    textAlign: 'right',
+  },
 });
 
 export default useStyles;
