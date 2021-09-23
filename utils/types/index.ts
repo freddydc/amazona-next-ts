@@ -43,6 +43,21 @@ export type Users = {
   token: string;
 };
 
+export type ItemReview = {
+  _id?: string;
+  user: string;
+  name: string;
+  rating: number;
+  comment: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export interface Reviews extends Products {
+  reviews: ItemReview[];
+  save(): void;
+}
+
 export interface User extends Users {
   confirmPassword: string;
 }
