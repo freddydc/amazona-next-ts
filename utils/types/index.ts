@@ -58,6 +58,19 @@ export interface Reviews extends Products {
   save(): void;
 }
 
+export interface FArgs {
+  price?: string;
+  sort?: string;
+  rating?: string;
+  brand?: string;
+  category?: string;
+  query?: any;
+  min?: string;
+  max?: string;
+  page?: string | number;
+  searchQuery?: string;
+}
+
 export interface User extends Users {
   confirmPassword: string;
 }
