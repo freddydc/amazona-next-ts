@@ -18,6 +18,7 @@ export type Products = {
   brand: string;
   rating: number;
   quantity: number;
+  featuredImage: string;
   numReviews: number;
   countInStock: number;
   description: string;

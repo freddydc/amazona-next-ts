@@ -24,6 +24,8 @@ handler.put(async (req: NextApiRequest, res: NextApiResponse) => {
     product.category = req.body.category;
     product.image = req.body.image;
     product.brand = req.body.brand;
+    product.isFeatured = req.body.isFeatured;
+    product.featuredImage = req.body.featuredImage;
     product.countInStock = req.body.countInStock;
     product.description = req.body.description;
     await product.save();

@@ -1,18 +1,28 @@
 import React, { useContext } from 'react';
 import { useRouter } from 'next/router';
-import { Grid } from '@material-ui/core';
+import Image from 'next/image';
+import NextLink from 'next/link';
+import Carousel from 'react-material-ui-carousel';
+import { Grid, Link, Typography } from '@material-ui/core';
 import { GetServerSideProps } from 'next';
 import { StoreContext } from '@utils/store/Store';
 import Layout from '@components/Layout/Layout';
 import Product from '@models/Product/Product';
 import ProductItem from '@components/ProductItem/ProductItem';
+import useStyles from '@components/Layout/styles';
 import { Products } from '@utils/types';
 import db from '@database';
 import axios from 'axios';
+import { LeanDocument } from 'mongoose';
 
-const Home = (props: { products: Products[] }) => {
+type ProductProps = {
+  topRatedProducts: Products[];
+  featuredProducts: Products[];
+};
+
+const Home = ({ topRatedProducts, featuredProducts }: ProductProps) => {
   const router = useRouter();
-  const { products } = props;
+  const classes = useStyles();
   const { state, dispatch } = useContext(StoreContext);
   const {
     cart: { cartItems },
@@ -32,30 +42,63 @@ const Home = (props: { products: Products[] }) => {
 
   return (
     <Layout>
-      <div>
-        <h1>Products</h1>
-        <Grid container spacing={3}>
-          {products.map((product) => (
-            <Grid item md={4} key={product._id}>
-              <ProductItem
-                product={product}
-                addToCartHandler={addToCartHandler}
+      <Carousel className={classes.mt_1} animation="slide">
+        {featuredProducts.map((product) => (
+          <NextLink
+            key={product._id}
+            href={`/product/${product.slug}`}
+            passHref
+          >
+            <Link>
+              <Image
+                alt={product.name}
+                src={product.featuredImage}
+                layout="responsive"
+                width="100%"
+                height="40%"
               />
-            </Grid>
-          ))}
-        </Grid>
-      </div>
+            </Link>
+          </NextLink>
+        ))}
+      </Carousel>
+      <Typography variant="h2">Popular Products</Typography>
+      <Grid container spacing={3}>
+        {topRatedProducts.map((product) => (
+          <Grid item md={4} key={product._id}>
+            <ProductItem
+              product={product}
+              addToCartHandler={addToCartHandler}
+            />
+          </Grid>
+        ))}
+      </Grid>
     </Layout>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
   await db.connect();
-  const products: Products[] = await Product.find({}, '-reviews').lean();
+  const featuredProductsDocs: LeanDocument<Products>[] = await Product.find(
+    { isFeatured: true },
+    '-reviews'
+  )
+    .lean()
+    .limit(3);
+
+  const topRatedProductsDocs: LeanDocument<Products>[] = await Product.find(
+    {},
+    '-reviews'
+  )
+    .lean()
+    .sort({
+      rating: -1,
+    })
+    .limit(6);
   await db.disconnect();
   return {
     props: {
-      products: products.map(db.convertDocToObj),
+      featuredProducts: featuredProductsDocs.map(db.convertDocToObj),
+      topRatedProducts: topRatedProductsDocs.map(db.convertDocToObj),
     },
   };
 };
