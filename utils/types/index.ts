@@ -1,10 +1,15 @@
 type ProductId = string;
 
+type Location = {
+  lat: string;
+  lng: string;
+};
 export type Address = {
   fullName: string;
   address: string;
   city: string;
   postalCode: number;
+  location: Location;
   country: string;
 };
 

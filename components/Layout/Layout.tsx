@@ -133,6 +133,8 @@ const Layout = ({ title, description, children }: LayoutProps) => {
     dispatch({ type: 'USER_LOGOUT', payload: '' });
     Cookies.remove('userInfo');
     Cookies.remove('cartItems');
+    Cookies.remove('shippingAddress');
+    Cookies.remove('paymentMethod');
     router.push('/');
   };
 
